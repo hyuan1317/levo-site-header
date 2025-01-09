@@ -16,8 +16,16 @@ export type MenuItem = {
 function MegaMenu({ data }: MegaMenuProps) {
   const [selectedMenu, setSelectedMenu] = useState<MenuItem>();
 
+  const handleOnCloseMenu = () => {
+    setSelectedMenu(undefined);
+  };
+
   const handleOnSelect = (item: MenuItem) => () => {
-    setSelectedMenu(item);
+    if (item.label === selectedMenu?.label) {
+      setSelectedMenu(undefined);
+    } else {
+      setSelectedMenu(item);
+    }
   };
 
   return (
@@ -25,9 +33,8 @@ function MegaMenu({ data }: MegaMenuProps) {
       {data.map((item) => {
         const isSelected = item.label === selectedMenu?.label;
         return (
-          <>
+          <div key={item.label} className="z-10">
             <div
-              key={item.label}
               className={cx(
                 'px-4 py-4 cursor-pointer md:border-b-4 md:bg-transparent',
                 {
@@ -49,13 +56,22 @@ function MegaMenu({ data }: MegaMenuProps) {
                 <MobileSubMenu data={selectedMenu.children} />
               </div>
             )}
-          </>
+          </div>
         );
       })}
       {selectedMenu && (
-        <div className="hidden absolute top-full left-0 w-full md:flex border">
-          <DesktopSubMenu data={selectedMenu.children} />
-        </div>
+        <>
+          <div
+            className="hidden md:block fixed top-0 bottom-0 left-0 right-0 z-0"
+            onClick={handleOnCloseMenu}
+          />
+          <div
+            key={selectedMenu.label}
+            className="hidden absolute top-full left-0 w-full md:flex border z-10"
+          >
+            <DesktopSubMenu data={selectedMenu.children} />
+          </div>
+        </>
       )}
     </div>
   );

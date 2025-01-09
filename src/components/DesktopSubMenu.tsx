@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { MenuItem } from './MegaMenu';
 import cx from 'classnames';
 
@@ -7,11 +7,7 @@ type SubMenuProps = {
 };
 
 function DesktopSubMenu({ data }: SubMenuProps) {
-  const [selectedMenu, setSelectedMenu] = useState<MenuItem>(data[0]);
-
-  useEffect(() => {
-    setSelectedMenu(data[0]);
-  }, [data]);
+  const [selectedMenu, setSelectedMenu] = useState<MenuItem>();
 
   const handleOnSelect = (item: MenuItem) => () => {
     setSelectedMenu(item);
@@ -25,12 +21,15 @@ function DesktopSubMenu({ data }: SubMenuProps) {
           return (
             <div
               key={item.label}
-              className={cx('px-4 py-4 flex-1 cursor-pointer', {
+              className={cx('flex flex-1 px-4 py-4 cursor-pointer', {
                 'md:bg-purple-100': isSelected,
               })}
               onClick={handleOnSelect(item)}
             >
               <p className="font-semibold">{item.label}</p>
+              {item.children.length > 0 && !isSelected && (
+                <p className="font-bold ml-4">{`>`}</p>
+              )}
             </div>
           );
         })}

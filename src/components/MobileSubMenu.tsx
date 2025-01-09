@@ -1,5 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { MenuItem } from './MegaMenu';
+import arrowDownIcon from '../assets/arrow-down.png';
 import cx from 'classnames';
 
 type SubMenuProps = {
@@ -7,14 +8,14 @@ type SubMenuProps = {
 };
 
 function MobileSubMenu({ data }: SubMenuProps) {
-  const [selectedMenu, setSelectedMenu] = useState<MenuItem>(data[0]);
-
-  useEffect(() => {
-    setSelectedMenu(data[0]);
-  }, [data]);
+  const [selectedMenu, setSelectedMenu] = useState<MenuItem>();
 
   const handleOnSelect = (item: MenuItem) => () => {
-    setSelectedMenu(item);
+    if (item.label === selectedMenu?.label) {
+      setSelectedMenu(undefined);
+    } else {
+      setSelectedMenu(item);
+    }
   };
 
   return (
@@ -22,15 +23,25 @@ function MobileSubMenu({ data }: SubMenuProps) {
       {data.map((item) => {
         const isSelected = item.label === selectedMenu?.label;
         return (
-          <div>
+          <div key={item.label}>
             <div
-              key={item.label}
-              className={cx('px-4 py-4 flex-1 cursor-pointer', {
-                'md:bg-purple-100': isSelected,
-              })}
+              className={cx(
+                'px-4 py-4 flex flex-1 items-center cursor-pointer',
+                {
+                  'md:bg-purple-100': isSelected,
+                },
+              )}
               onClick={handleOnSelect(item)}
             >
               <p className="font-semibold">{item.label}</p>
+              {item.children.length > 0 && (
+                <img
+                  src={arrowDownIcon}
+                  className={cx('ml-4 w-3 h-3', {
+                    'rotate-180': isSelected,
+                  })}
+                />
+              )}
             </div>
             {isSelected && <MobileSubMenu data={selectedMenu.children} />}
           </div>
