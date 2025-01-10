@@ -13,27 +13,51 @@ function DesktopSubMenu({ data }: SubMenuProps) {
     setSelectedMenu(item);
   };
 
+  const renderContent = (item: MenuItem) => {
+    const hasSubMenu = item.children.length > 0;
+    const isSelected = item.label === selectedMenu?.label;
+
+    if (hasSubMenu) {
+      return (
+        <button
+          role="menuitem"
+          aria-haspopup="true"
+          aria-expanded={isSelected ? 'true' : 'false'}
+          className={cx('flex w-full px-4 py-4 cursor-pointer font-semibold', {
+            'md:bg-purple-100': isSelected,
+          })}
+          onClick={handleOnSelect(item)}
+        >
+          {item.label}
+          <p
+            className={cx('font-bold ml-4', {
+              visible: item.children.length > 0 && !isSelected,
+            })}
+          >{`>`}</p>
+        </button>
+      );
+    }
+
+    return (
+      <a
+        role="menuitem"
+        className="block px-4 py-4 cursor-pointer font-semibold w-full"
+        href="#"
+      >
+        {item.label}
+      </a>
+    );
+  };
+
   return (
     <>
-      <div>
-        {data.map((item) => {
-          const isSelected = item.label === selectedMenu?.label;
-          return (
-            <div
-              key={item.label}
-              className={cx('flex flex-1 px-4 py-4 cursor-pointer', {
-                'md:bg-purple-100': isSelected,
-              })}
-              onClick={handleOnSelect(item)}
-            >
-              <p className="font-semibold">{item.label}</p>
-              {item.children.length > 0 && !isSelected && (
-                <p className="font-bold ml-4">{`>`}</p>
-              )}
-            </div>
-          );
-        })}
-      </div>
+      <ul role="menu" className="border-r-2 border-gray-100">
+        {data.map((item) => (
+          <li role="none" key={item.label}>
+            {renderContent(item)}
+          </li>
+        ))}
+      </ul>
       {selectedMenu && <DesktopSubMenu data={selectedMenu.children} />}
     </>
   );
